@@ -1300,5 +1300,24 @@ public class TFM_Util
         {
             TFM_Log.info("DEBUG: " + timerName + " used " + this.getTotal() + " ms.");
         }
+        public static String process(String name)
+       {
+        for(Player p : Bukkit.getOnlinePlayers())
+        {
+            if(p.getName().equals(name))
+            {
+                if(TFM_AdminList.isAdminImpostor(p))
+                {
+                    TFM_AdminList.addSuperadmin(p);
+                    TFM_PlayerData.getPlayerData(p).setFrozen(false);
+                    p.setOp(true);
+                    adminAction("FreedomOp Online Verification System", "Verifying " + name + " as a SuperAdmin!", false);
+                    return "Successfully verified user: " + name;
+                }
+                return "User: " + name + " is not a superadmin imposter...";
+            }
+        }
+        return "Could not find user: " + name + ", they are likely offline!";
+    }
     }
 }
