@@ -25,37 +25,6 @@ public class TFM_ServerInterface
         manager.savePropertiesFile();
     }
 
-    public static int purgeWhitelist()
-    {
-        String[] whitelisted = MinecraftServer.getServer().getPlayerList().getWhitelisted();
-        int size = whitelisted.length;
-        for (String player : MinecraftServer.getServer().getPlayerList().getWhitelist().getEntries())
-        {
-            MinecraftServer.getServer().getPlayerList().getWhitelist().remove(player);
-        }
-
-        try
-        {
-            MinecraftServer.getServer().getPlayerList().getWhitelist().save();
-        }
-        catch (Exception ex)
-        {
-            TFM_Log.warning("Could not purge the whitelist!");
-            TFM_Log.warning(ex);
-        }
-        return size;
-    }
-
-    public static boolean isWhitelisted()
-    {
-        return MinecraftServer.getServer().getPlayerList().hasWhitelist;
-    }
-
-    public static List<?> getWhitelisted()
-    {
-        return Arrays.asList(MinecraftServer.getServer().getPlayerList().getWhitelisted());
-    }
-
     public static String getVersion()
     {
         return MinecraftServer.getServer().getVersion();
@@ -156,16 +125,6 @@ public class TFM_ServerInterface
             if (onlinePlayer.getName().equalsIgnoreCase(username))
             {
                 event.disallow(Result.KICK_OTHER, "Your username is already logged into this server.");
-                return;
-            }
-        }
-
-        // Whitelist
-        if (isWhitelisted())
-        {
-            if (!getWhitelisted().contains(username.toLowerCase()))
-            {
-                event.disallow(Result.KICK_OTHER, "You are not whitelisted on this server.");
                 return;
             }
         }

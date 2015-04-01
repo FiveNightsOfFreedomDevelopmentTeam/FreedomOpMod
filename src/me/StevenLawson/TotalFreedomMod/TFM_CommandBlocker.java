@@ -72,7 +72,8 @@ public class TFM_CommandBlocker
             // Obtain command from alias
             if (command == null)
             {
-                TFM_Log.info("Blocking unknown command: /" + commandName);
+                // Not testing so block it
+                // TFM_Log.info("Blocking unknown command: /" + commandName);
             }
             else
             {
@@ -81,7 +82,8 @@ public class TFM_CommandBlocker
 
             if (BLOCKED_COMMANDS.containsKey(commandName))
             {
-                TFM_Log.warning("Not blocking: /" + commandName + " - Duplicate entry exists!");
+                // Not testing so block it
+               // TFM_Log.warning("Not blocking: /" + commandName + " - Duplicate entry exists!");
                 continue;
             }
 
