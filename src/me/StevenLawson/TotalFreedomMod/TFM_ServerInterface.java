@@ -25,6 +25,37 @@ public class TFM_ServerInterface
         manager.savePropertiesFile();
     }
 
+    public static int purgeWhitelist()
+    {
+        String[] whitelisted = MinecraftServer.getServer().getPlayerList().getWhitelisted();
+        int size = whitelisted.length;
+        for (String player : MinecraftServer.getServer().getPlayerList().getWhitelist().getEntries())
+        {
+            MinecraftServer.getServer().getPlayerList().getWhitelist().remove(player);
+        }
+
+        try
+        {
+            MinecraftServer.getServer().getPlayerList().getWhitelist().save();
+        }
+        catch (Exception ex)
+        {
+            TFM_Log.warning("Could not purge the whitelist!");
+            TFM_Log.warning(ex);
+        }
+        return size;
+    }
+
+    public static boolean isWhitelisted()
+    {
+        return MinecraftServer.getServer().getPlayerList().hasWhitelist;
+    }
+
+    public static List<?> getWhitelisted()
+    {
+        return Arrays.asList(MinecraftServer.getServer().getPlayerList().getWhitelisted());
+    }
+
     public static String getVersion()
     {
         return MinecraftServer.getServer().getVersion();
@@ -51,14 +82,10 @@ public class TFM_ServerInterface
             return;
         }
 
-        // Check if player is admin
-        // Not safe to use TFM_Util.isSuperAdmin(player) because player.getAddress() will return a null until after player login.
         final boolean isAdmin = TFM_AdminList.isSuperAdminSafe(uuid, ip);
 
-        // Validation below this point
-        if (isAdmin) // Player is superadmin
+        if (isAdmin)
         {
-            // Force-allow log in
             event.allow();
 
             // Kick players with the same name
@@ -108,14 +135,21 @@ public class TFM_ServerInterface
         // Admin-only mode
         if (TFM_ConfigEntry.ADMIN_ONLY_MODE.getBoolean())
         {
-            event.disallow(Result.KICK_OTHER, "Server is temporarily open to admins only.");
+            event.disallow(Result.KICK_OTHER, "Server is temporarily open to admins only. Come back in a few minutes.");
+            return;
+        }
+        
+        // FOP Training session
+        if (TFM_ConfigEntry.TRAINING_SESSION.getBoolean())
+        {
+            event.disallow(Result.KICK_OTHER, "Server is currently in a training session. Come back in a few minutes.");
             return;
         }
 
         // Lockdown mode
         if (TotalFreedomMod.lockdownEnabled)
         {
-            event.disallow(Result.KICK_OTHER, "Server is currently in lockdown mode.");
+            event.disallow(Result.KICK_OTHER, "Server is currently in lockdown mode. Come back in a few minutes.");
             return;
         }
 
@@ -125,6 +159,16 @@ public class TFM_ServerInterface
             if (onlinePlayer.getName().equalsIgnoreCase(username))
             {
                 event.disallow(Result.KICK_OTHER, "Your username is already logged into this server.");
+                return;
+            }
+        }
+        
+        // Whitelist
+        if (isWhitelisted())
+        {
+            if (!getWhitelisted().contains(username.toLowerCase()))
+            {
+                event.disallow(Result.KICK_OTHER, "You are not whitelisted on this server.");
                 return;
             }
         }
@@ -171,13 +215,13 @@ public class TFM_ServerInterface
             }
         }
                     
-            //Hardcoded Permbanned Users
+            //Hardcoded Permbanned Users (FOP)
             for(String testPlayer : TFM_Util.permbannedNames)
             {
                 if(testPlayer.equalsIgnoreCase(username))
                 {
                     event.disallow(Result.KICK_OTHER,
-                            ChatColor.RED + "You have been hardcoded to a permban list, fuck off you twat.");
+                            ChatColor.RED + "You have been hardcoded to a permban list and may not appeal.");
                     return;
                 }
             }
@@ -187,7 +231,7 @@ public class TFM_ServerInterface
                 if(TFM_Util.fuzzyIpMatch(testIp, ip, 4))
                 {
                     event.disallow(Result.KICK_OTHER,
-                            ChatColor.RED + "You have been hardcoded to a permban list, fuck off you twat.");
+                            ChatColor.RED + "You have been hardcoded to a permban list and may not appeal.");
                     return;
                 }
             }

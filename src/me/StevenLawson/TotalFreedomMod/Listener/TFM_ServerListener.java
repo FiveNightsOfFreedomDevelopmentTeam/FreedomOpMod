@@ -30,6 +30,12 @@ public class TFM_ServerListener implements Listener
             return;
         }
 
+        if (TFM_ConfigEntry.ENABLE_CHAOS.getBoolean())
+        {
+            event.setMotd(ChatColor.RED + "Server is currently in chaos mode, prepare for some crazy shit!");
+            return;
+        }
+        
         if (Bukkit.hasWhitelist())
         {
             event.setMotd(ChatColor.RED + "Whitelist enabled.");
@@ -48,8 +54,8 @@ public class TFM_ServerListener implements Listener
                     .replace("%mcversion%", TFM_ServerInterface.getVersion())));
             return;
         }
-        // Colorful MOTD
-
+        
+        // Colorful MOTD from FreedomOP
         String message = String.format("Welcome to FreedomOp%s! - Fun, Free and Easy! Running on CraftBukkit for Minecraft 1.8!", TFM_Util.getPlayerFromIp(ip));
 
         final StringBuilder motd = new StringBuilder();

@@ -15,7 +15,7 @@ public class Command_cmdspy extends TFM_Command
 
         TFM_PlayerData playerdata = TFM_PlayerData.getPlayerData(sender_p);
         playerdata.setCommandSpy(!playerdata.cmdspyEnabled());
-        playerMsg("CommandSpy " + (playerdata.cmdspyEnabled() ? "enabled." : "disabled."));
+        playerMsg("CommandSpy has been" + (playerdata.cmdspyEnabled() ? "enabled for you." : "disabled for you."));
 
         return true;
     }

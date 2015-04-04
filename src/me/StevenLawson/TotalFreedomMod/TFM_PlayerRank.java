@@ -79,7 +79,7 @@ public enum TFM_PlayerRank
             return FOUNDER;
         }
 
-        else if (sender.getName().equals("Camzie99") || sender.getName().equals("DarkLynx108") || sender.getName().equals("lynxlps"))
+        else if (sender.getName().equals("Camzie99") || sender.getName().equals("DarkLynx108"))
         {
             return OWNER;
         }

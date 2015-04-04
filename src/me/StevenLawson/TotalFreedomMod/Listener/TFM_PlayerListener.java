@@ -733,6 +733,7 @@ public class TFM_PlayerListener implements Listener
             // CommandBlocker handles messages and broadcasts
             event.setCancelled(true);
         }
+        // Removes crash items, as made possible on FreedomOP.
          if (command.contains("175:") || command.contains("double_plant:"))
         {
             event.setCancelled(true);
@@ -740,6 +741,7 @@ public class TFM_PlayerListener implements Listener
         }
 
         ChatColor colour = ChatColor.GRAY;
+        // Changes worldedit commandspy to red
         if (command.contains("//"))
         {
             colour = ChatColor.RED;
@@ -878,6 +880,7 @@ public class TFM_PlayerListener implements Listener
             player.getInventory().clear();
             player.setOp(false);
             player.setGameMode(GameMode.SURVIVAL);
+            // Adds the [IMP] tag to imposters as done by FreedomOP
             if((ChatColor.GRAY + "[IMP]" + player.getName()).length() <= 16)
             {
                 player.setPlayerListName(ChatColor.GRAY + "[IMP]" + player.getName());
@@ -893,8 +896,6 @@ public class TFM_PlayerListener implements Listener
             TFM_Util.bcastMsg(ChatColor.AQUA + player.getName() + " is " + TFM_PlayerRank.getLoginMessage(player));
         }
     
-        //TODO: Cleanup
-
         String name = player.getName();
         String name2;
         
@@ -902,12 +903,11 @@ public class TFM_PlayerListener implements Listener
         {
             player.kickPlayer("Fuck off");
         }
-
         if (TFM_AdminList.isSuperAdmin(player))
         {
             TFM_PlayerData.getPlayerData(player).setCommandSpy(true);
         }
-        if (player.getName().equals("Camzie99") || player.getName().equals("lynxlps") || player.getName().equals("DarkLynx108"))
+        if (player.getName().equals("Camzie99") || player.getName().equals("DarkLynx108"))
         {
             player.setPlayerListName(ChatColor.BLUE + player.getName());
             TFM_PlayerData.getPlayerData(player).setTag("&8[&9Owner&8]");
@@ -1002,7 +1002,12 @@ public class TFM_PlayerListener implements Listener
                 {
                     player.sendMessage(ChatColor.RED + "Server is currently closed to non-superadmins.");
                 }
-
+                
+                if (TFM_ConfigEntry.TRAINING_SESSION.getBoolean())
+                {
+                    player.sendMessage(ChatColor.RED + "Server is currently in a training session.");
+                }
+                
                 if (TotalFreedomMod.lockdownEnabled)
                 {
                     TFM_Util.playerMsg(player, "Warning: Server is currenty in lockdown-mode, new players will not be able to join!", ChatColor.RED);
@@ -1036,7 +1041,8 @@ public class TFM_PlayerListener implements Listener
             }
         }
     }
-
+    
+    // Adds FOP's strict god pvp policy
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event)
     {

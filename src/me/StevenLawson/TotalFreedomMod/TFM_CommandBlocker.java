@@ -107,6 +107,7 @@ public class TFM_CommandBlocker
         return isCommandBlocked(command, sender, true);
     }
 
+    // Removes stupid error for plugin-specific commands.
     public static boolean isCommandBlocked(String command, CommandSender sender, boolean doAction)
     {
         if (command == null || command.isEmpty())
