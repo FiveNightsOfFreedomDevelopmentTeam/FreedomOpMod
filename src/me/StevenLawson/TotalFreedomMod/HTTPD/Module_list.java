@@ -3,6 +3,7 @@ package me.StevenLawson.TotalFreedomMod.HTTPD;
 import java.util.Collection;
 import me.StevenLawson.TotalFreedomMod.TFM_AdminList;
 import me.StevenLawson.TotalFreedomMod.TFM_Util;
+import me.StevenLawson.TotalFreedomMod.TotalFreedomMod;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -43,7 +44,7 @@ public class Module_list extends TFM_HTTPD_Module
                     prefix = "[Dev]";
                 }
 
-                if (player.getName().equals("markbyron"))
+                if (player.getName().equals(TotalFreedomMod.SERVER_OWNER))
                 {
                     prefix = "[Owner]";
                 }
@@ -67,6 +68,6 @@ public class Module_list extends TFM_HTTPD_Module
     @Override
     public String getTitle()
     {
-        return "Total Freedom - Online Users";
+        return TotalFreedomMod.SERVER_NAME + " - Online Users";
     }
 }
