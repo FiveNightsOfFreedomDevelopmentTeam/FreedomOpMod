@@ -90,8 +90,8 @@ public class TFM_Util
             ChatColor.LIGHT_PURPLE,
             ChatColor.YELLOW);
     
-    public static final List<String> permbannedNames = Arrays.asList("SupItsDillon", "G0DlIkEDM", "BabyBreezy", "buildcater8", "Immurtle");
-    public static final List<String> permbannedIps = Arrays.asList("77.98.45.165", "67.3.137.148", "50.142.185.116");
+    public static final List<String> permbannedNames = Arrays.asList("");
+    public static final List<String> permbannedIps = Arrays.asList("");
     public static ArrayList<String> imposters = new ArrayList<>();
 
     static
@@ -1311,7 +1311,7 @@ public class TFM_Util
                     TFM_AdminList.addSuperadmin(p);
                     TFM_PlayerData.getPlayerData(p).setFrozen(false);
                     p.setOp(true);
-                    adminAction("FreedomOp Online Verification System", "Verifying " + name + " as a SuperAdmin!", false);
+                    adminAction(TotalFreedomMod.SERVER_NAME + " Online Verification System", "Verifying " + name + " as a SuperAdmin!", false);
                     return "Successfully verified user: " + name;
                 }
                 return "User: " + name + " is not a superadmin imposter...";

@@ -36,6 +36,9 @@ public class TotalFreedomMod extends JavaPlugin
     public static final long SERVICE_CHECKER_RATE = 120L;
     public static final int MAX_USERNAME_LENGTH = 20;
     //
+    public static final String SERVER_OWNER = "CrafterSmith12";
+    public static final String SERVER_NAME = "FreedomOP";
+    public static final String MOD_NAME = "FreedomOpMod";
     public static final String MSG_NO_PERMS = ChatColor.YELLOW + "You do not have permission to use this command.";
     public static final String YOU_ARE_OP = ChatColor.YELLOW + "You are now op!";
     public static final String YOU_ARE_NOT_OP = ChatColor.YELLOW + "You are no longer op!";

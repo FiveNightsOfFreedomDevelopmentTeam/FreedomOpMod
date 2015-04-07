@@ -146,6 +146,13 @@ public class TFM_ServerInterface
             return;
         }
 
+        // FOP Chaos Mode
+        if (TFM_ConfigEntry.ENABLE_CHAOS.getBoolean())
+        {
+            event.disallow(Result.KICK_OTHER, "Server is currently in chaos mode. Expect some crazy s**t!");
+            return;
+        }
+
         // Lockdown mode
         if (TotalFreedomMod.lockdownEnabled)
         {

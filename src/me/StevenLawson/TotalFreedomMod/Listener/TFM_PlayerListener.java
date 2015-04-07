@@ -72,7 +72,6 @@ public class TFM_PlayerListener implements Listener
 {
     public static final List<String> BLOCKED_MUTED_CMDS = Arrays.asList(StringUtils.split("say,me,msg,m,tell,r,reply,mail,email", ","));
     public static final int MSG_PER_HEARTBEAT = 10;
-    public static final int DEFAULT_PORT = 25565;
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event)
@@ -1008,6 +1007,11 @@ public class TFM_PlayerListener implements Listener
                     player.sendMessage(ChatColor.RED + "Server is currently in a training session.");
                 }
                 
+                if (TFM_ConfigEntry.ENABLE_CHAOS.getBoolean())
+                {
+                    player.sendMessage(ChatColor.RED + "Server is currently in chaos mode. Expect some crazy s**t!");
+                }
+                
                 if (TotalFreedomMod.lockdownEnabled)
                 {
                     TFM_Util.playerMsg(player, "Warning: Server is currenty in lockdown-mode, new players will not be able to join!", ChatColor.RED);
@@ -1120,23 +1124,6 @@ public class TFM_PlayerListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event)
     {
-        if (TFM_ConfigEntry.FORCE_IP_ENABLED.getBoolean())
-        {
-            final String hostname = event.getHostname();
-            final String connectAddress = TFM_ConfigEntry.SERVER_ADDRESS.getString();
-            final int connectPort = TotalFreedomMod.server.getPort();
-
-            if (!hostname.equalsIgnoreCase(connectAddress + ":" + connectPort) && !hostname.equalsIgnoreCase(connectAddress + ".:" + connectPort))
-            {
-                final int forceIpPort = TFM_ConfigEntry.FORCE_IP_PORT.getInteger();
-                event.disallow(PlayerLoginEvent.Result.KICK_OTHER,
-                        TFM_ConfigEntry.FORCE_IP_KICKMSG.getString()
-                        .replace("%address%", TFM_ConfigEntry.SERVER_ADDRESS.getString() + (forceIpPort == DEFAULT_PORT ? "" : ":" + forceIpPort)));
-                return;
-            }
-
-        }
-
         TFM_ServerInterface.handlePlayerLogin(event);
     }
 }

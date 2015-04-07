@@ -27,17 +27,6 @@ server:
   # URL players should appeal for permanent bans at
   permban_url: http://to.fop.us.to/appeal
 
-# ForceIP configuration
-forceip:
-  enabled: false
-
-  # The port players should use to connect to your server; only applies to forceip
-  port: 25565
-
-  # The kick message sent to players when logging in with the wrong hostname
-  kickmsg: You have been kicked from the server - Please connect using %address%
-
-
 # Blocking certain events
 allow:
   fire_place: false
@@ -88,16 +77,24 @@ blocked_commands:
   - 'n:b:/gamemode:Use /creative and /survival to set your gamemode.'
   - 'n:b:/gamerule:_'
   - 'n:b:/ban:_'
+  - 'n:b:/difficulty:_'
+  - 'n:b:/setdifficulty:_'
   - 'n:b:/pardon:_'
   - 'n:b:/ban-ip:_'
+  - 'n:b:/banip:_'
   - 'n:b:/pardon-ip:_'
+  - 'n:b:/pardonip:_'
   - 'n:b:/toggledownfall:_'
   - 'n:b:/effect:Please use /potion to set effects.'
   - 'n:b:/enderchest:_'
+  - 'n:b:/echest:_'
   - 'n:b:/spreadplayers:_'
 
   # Superadmin commands
   - 's:b:/kick:_'
+  - 's:b:/co:Ask an admin to roll it back for you instead!'
+  - 's:b:/coreprotect:Ask an admin to roll it back for you instead!'
+  - 's:b:/core:Ask an admin to roll it back for you instead!'
   - 's:b:/socialspy:_'
   - 's:b:/kill:_'
   - 's:b://generate:_'
@@ -109,17 +106,23 @@ blocked_commands:
   - 's:b:/mat:_'
   - 's:b:/tool:_'
   - 's:b://butcher:_'
+  - 's:b:/killall:_'
+  - 's:b:/heal:_'
   - 's:b:/scoreboard:_'
   - 's:b:/setspawn:_'
   - 's:b://snow:_'
   - 's:b:/tellraw:_'
   - 's:b:/forestgen:_'
   - 's:b:/setidletimeout:_'
+  - 's:b:/setworldspawn:_'
   - 's:b:/mail sendall:_'
   - 's:b:/eco reset:_'
   - 's:b:/mask:_'
   - 's:b:/gmask:_'
+  - 's:b:/floodfill:_'
   - 's:b:/tool:_'
+  - 's:b:/v:&4Invis is not allowed!'
+  - 's:b:/vanish:&4Invis is not allowed!'
   - 's:b:/lrbuild:_'
   - 's:b:/defaultgamemode:_'
   
@@ -206,33 +209,29 @@ announcer:
   enabled: true
 
   # Interval between announcements, in seconds.
-  interval: 600
+  interval: 100
 
   # Prefix for all announcements
-  prefix: '&5[&eTotalFreedom&5] &b'
+  prefix: '&5[&eFreedomOP&5] &b'
 
   announcements:
-    - 'Be sure to visit our forums at &6http://totalfreedom.boards.net/'
-    - 'You can always review the server rules here: &6http://totalfreedom.me/'
-    - 'If you are not OP, be sure to ask!'
-    - 'Somebody breaking the rules?  Report it!  /report <user> <reason>'
-    - 'Griefing is not allowed!'
-    - 'Hacking is allowed!'
-    - 'Interested in becoming admin? Do "/ai" for more information!'
+    - 'Be sure to visit our forums at &6http://freeedomop.boards.net/'
+    - 'You can always review the server rules here: &6http://fop.us.to/'
+    - 'If you are not &cOP&b, be sure to ask!'
+    - 'Somebody breaking the rules?  Report it using &9/report <user> <reason>'
+    - 'Griefing is &4not &ballowed!'
+    - 'Hacking is &aallowed!'
+    - 'Interested in becoming admin? Do &a"/ai"&b for more information!'
     - 'You may view all online administrators via "/list -a"'
-    - 'Save your buildings via WorldEdit!  http://totalfreedom.me for more information!'
-    - 'Famous players, such as Notch, are always fake!  We are an offline/cracked server!'
-    - 'You may contact TotalFreedoms Support on Twitter!  pravi.us/nGS'
-    - 'You may download TotalFreedomMod here: pravi.us/V8c'
-    - 'MarkByron is TotalFreedoms owner.'
+    - 'Save your buildings via &9WorldEdit!&b Visit http://fop.us.to for more information!'
+    - 'Famous players, such as Notch, are always &dfake!&b We are an &coffline/cracked&b server!'
+    - 'CrafterSmith12 is the &9Owner&b of FreedomOP.'
     - 'Server lagging?  Check the lag via "/tps"'
-    - 'You are allowed to record and stream videos on TotalFreedom :D'
-    - 'An admin abusing?  Report it! pravi.us/vfa'
-    - 'Player vs Player while in creative/god mode it forbidden!'
-    - 'Spawn killing is forbidden!'
-    - 'Invisible potions are allowed!'
+    - 'You are allowed to record and stream videos on FreedomOP :D'
+    - 'PvP while in creative/god mode is &cforbidden!'
+    - 'Spawn killing is strictly &cforbidden!'
+    - 'Invisibility is &cnot&b allowed!'
     - 'Serial griefing and trolling will result in permanently being banned!'
-    - 'TotalFreedom does not accept any form of donations!'
     - 'Racism, Nazism, and Sexism is strictly forbidden!'
 
 # Players who cannot be banned by username
@@ -278,12 +277,6 @@ unbannable_usernames:
 # IPs that can not be supered
 noadmin_ips:
   - 127.0.0.1
-
-# TwitterBot - Used to allow superadmins to verify themselves using twitter
-twitterbot:
-  enabled: false
-  url: ''
-  secret: ''
 
 # Pet Protect - Prevent tamed pets from being killed.
 petprotect:
