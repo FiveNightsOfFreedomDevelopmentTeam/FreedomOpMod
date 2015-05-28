@@ -42,17 +42,12 @@ public class TFM_ServerListener implements Listener
             return;
         }
 
-        if (!TFM_ConfigEntry.SERVER_COLORFUL_MOTD.getBoolean())
-        {
-            event.setMotd(TFM_Util.colorize(TFM_ConfigEntry.SERVER_MOTD.getString()
-                    .replace("%mcversion%", TFM_ServerInterface.getVersion())));
-            return;
-        }
         // Colorful MOTD
+        String message = String.format("Welcome to " + TFM_ConfigEntry.SERVER_NAME.getString() + "%s! - Fun, Free and Easy! Running on Spigot for Minecraft 1.8.4!", TFM_Util.getPlayerFromIp(ip));
 
         final StringBuilder motd = new StringBuilder();
 
-        for (String word : TFM_ConfigEntry.SERVER_MOTD.getString().replace("%mcversion%", TFM_ServerInterface.getVersion()).split(" "))
+        for (String word : message.split(" "))
         {
             motd.append(TFM_Util.randomChatColor()).append(word).append(" ");
         }

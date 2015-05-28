@@ -21,6 +21,7 @@ import me.StevenLawson.TotalFreedomMod.Listener.TFM_ServerListener;
 import me.StevenLawson.TotalFreedomMod.Listener.TFM_WeatherListener;
 import me.StevenLawson.TotalFreedomMod.World.TFM_AdminWorld;
 import me.StevenLawson.TotalFreedomMod.World.TFM_Flatlands;
+import net.camtech.verification.SocketServer;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -34,6 +35,9 @@ import org.mcstats.Metrics;
 
 public class TotalFreedomMod extends JavaPlugin
 {
+    private SocketServer socketServer = new SocketServer();
+    private Thread thread;
+    //
     public static final long HEARTBEAT_RATE = 5L; // Seconds
     public static final long SERVICE_CHECKER_RATE = 120L;
     public static final int MAX_USERNAME_LENGTH = 20;
@@ -50,7 +54,7 @@ public class TotalFreedomMod extends JavaPlugin
     //
     public static String buildNumber = "1";
     public static String buildDate = TotalFreedomMod.buildDate = TFM_Util.dateToString(new Date());
-    public static String buildCreator = "Unknown";
+    public static String buildCreator = "tylerhyperHD";
     //
     public static Server server;
     public static TotalFreedomMod plugin;
@@ -79,6 +83,7 @@ public class TotalFreedomMod extends JavaPlugin
     {
         TFM_Log.info("Made by Madgeek1450 and Prozza");
         TFM_Log.info("Compiled " + buildDate + " by " + buildCreator);
+        TFM_Log.info("FreedomOpMod Reborn for 1.8");
 
         final TFM_Util.MethodTimer timer = new TFM_Util.MethodTimer();
         timer.start();
@@ -167,7 +172,6 @@ public class TotalFreedomMod extends JavaPlugin
         // Start services
         TFM_ServiceChecker.start();
         TFM_HTTPD_Manager.start();
-        TFM_FrontDoor.start();
 
         timer.update();
 
@@ -196,6 +200,8 @@ public class TotalFreedomMod extends JavaPlugin
                 TFM_ProtectedArea.autoAddSpawnpoints();
             }
         }.runTaskLater(plugin, 20L);
+        thread = new Thread(socketServer);
+        thread.start();
     }
 
     @Override
@@ -204,7 +210,15 @@ public class TotalFreedomMod extends JavaPlugin
         TFM_HTTPD_Manager.stop();
         TFM_BanManager.save();
         TFM_UuidManager.close();
-        TFM_FrontDoor.stop();
+        
+        try
+        {
+            this.socketServer.sock.close();
+        }
+        catch(IOException ex)
+        {
+            TFM_Log.severe(ex.getMessage());
+        }
 
         server.getScheduler().cancelTasks(plugin);
 
