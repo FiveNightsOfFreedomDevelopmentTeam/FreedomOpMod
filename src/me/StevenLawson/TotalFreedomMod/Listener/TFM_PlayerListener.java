@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.regex.Pattern;
-import me.StevenLawson.TotalFreedomMod.Bridge.TFM_EssentialsBridge;
 import me.StevenLawson.TotalFreedomMod.Commands.Command_landmine;
 import me.StevenLawson.TotalFreedomMod.Config.TFM_ConfigEntry;
 import me.StevenLawson.TotalFreedomMod.TFM_AdminList;
@@ -24,8 +23,8 @@ import me.StevenLawson.TotalFreedomMod.TFM_PlayerRank;
 import me.StevenLawson.TotalFreedomMod.TFM_RollbackManager;
 import me.StevenLawson.TotalFreedomMod.TFM_RollbackManager.RollbackEntry;
 import me.StevenLawson.TotalFreedomMod.TFM_ServerInterface;
+import me.StevenLawson.TotalFreedomMod.TFM_Sync;
 import me.StevenLawson.TotalFreedomMod.TFM_Util;
-import static me.StevenLawson.TotalFreedomMod.TFM_Util.playerMsg;
 import me.StevenLawson.TotalFreedomMod.TFM_UuidManager;
 import me.StevenLawson.TotalFreedomMod.TotalFreedomMod;
 import me.StevenLawson.TotalFreedomMod.World.TFM_AdminWorld;
@@ -37,8 +36,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
@@ -48,23 +45,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import static org.bukkit.potion.PotionEffectType.INVISIBILITY;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -72,6 +63,7 @@ public class TFM_PlayerListener implements Listener
 {
     public static final List<String> BLOCKED_MUTED_CMDS = Arrays.asList(StringUtils.split("say,me,msg,m,tell,r,reply,mail,email", ","));
     public static final int MSG_PER_HEARTBEAT = 10;
+    public static final int DEFAULT_PORT = 25565;
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event)
@@ -334,7 +326,7 @@ public class TFM_PlayerListener implements Listener
                                     {
                                         if (targetPosVec.distanceSquared(playerLocVec) < (RADIUS_HIT * RADIUS_HIT))
                                         {
-                                            target.setFlying(false);
+                                            TFM_Util.setFlying(player, false);
                                             target.setVelocity(targetPosVec.subtract(playerLocVec).normalize().multiply(STRENGTH));
                                             didHit = true;
                                         }
@@ -398,7 +390,7 @@ public class TFM_PlayerListener implements Listener
 
         if (!TFM_AdminList.isSuperAdmin(player) && playerdata.isFrozen())
         {
-            player.setFlying(true);
+            TFM_Util.setFlying(player, true);
             event.setTo(playerdata.getFreezeLocation());
             return; // Don't process adminworld validation
         }
@@ -465,7 +457,7 @@ public class TFM_PlayerListener implements Listener
         // Freeze
         if (!TFM_AdminList.isSuperAdmin(player) && playerdata.isFrozen())
         {
-            player.setFlying(true);
+            TFM_Util.setFlying(player, true);
             event.setTo(playerdata.getFreezeLocation());
         }
 
@@ -568,7 +560,7 @@ public class TFM_PlayerListener implements Listener
             final Player player = event.getPlayer();
             String message = event.getMessage().trim();
 
-            final TFM_PlayerData playerdata = TFM_PlayerData.getPlayerData(player);
+            final TFM_PlayerData playerdata = TFM_PlayerData.getPlayerDataSync(player);
 
             // Check for spam
             final Long lastRan = TFM_Heartbeat.getLastRan();
@@ -580,8 +572,8 @@ public class TFM_PlayerListener implements Listener
             {
                 if (playerdata.incrementAndGetMsgCount() > MSG_PER_HEARTBEAT)
                 {
-                    TFM_Util.bcastMsg(player.getName() + " was automatically kicked for spamming chat.", ChatColor.RED);
-                    TFM_Util.autoEject(player, "Kicked for spamming chat.");
+                    TFM_Sync.bcastMsg(player.getName() + " was automatically kicked for spamming chat.", ChatColor.RED);
+                    TFM_Sync.autoEject(player, "Kicked for spamming chat.");
 
                     playerdata.resetMsgCount();
 
@@ -593,7 +585,7 @@ public class TFM_PlayerListener implements Listener
             // Check for message repeat
             if (playerdata.getLastMessage().equalsIgnoreCase(message))
             {
-                TFM_Util.playerMsg(player, "Please do not repeat messages.");
+                TFM_Sync.playerMsg(player, "Please do not repeat messages.");
                 event.setCancelled(true);
                 return;
             }
@@ -603,9 +595,9 @@ public class TFM_PlayerListener implements Listener
             // Check for muted
             if (playerdata.isMuted())
             {
-                if (!TFM_AdminList.isSuperAdmin(player))
+                if (!TFM_AdminList.isSuperAdminSync(player))
                 {
-                    player.sendMessage(ChatColor.RED + "You are muted, STFU! - You will be unmuted in 5 minutes.");
+                    TFM_Sync.playerMsg(player, ChatColor.RED + "You are muted, STFU! - You will be unmuted in 5 minutes.");
                     event.setCancelled(true);
                     return;
                 }
@@ -620,7 +612,7 @@ public class TFM_PlayerListener implements Listener
             if (message.length() > 100)
             {
                 message = message.substring(0, 100);
-                TFM_Util.playerMsg(player, "Message was shortened because it was too long to send.");
+                TFM_Sync.playerMsg(player, "Message was shortened because it was too long to send.");
             }
 
             // Check for caps
@@ -643,7 +635,7 @@ public class TFM_PlayerListener implements Listener
             // Check for adminchat
             if (playerdata.inAdminChat())
             {
-                TFM_Util.adminChatMessage(player, message, false);
+                TFM_Sync.adminChatMessage(player, message, false);
                 event.setCancelled(true);
                 return;
             }
@@ -663,18 +655,12 @@ public class TFM_PlayerListener implements Listener
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
         String command = event.getMessage();
         final Player player = event.getPlayer();
 
-        if ((command.contains("&k") || command.contains("&m") || command.contains("&o") || command.contains("&n")) && !TFM_AdminList.isSuperAdmin(player))
-        {
-            event.setCancelled(true);
-            TFM_Util.playerMsg(player, ChatColor.RED + "You are not permitted to use &o, &k, &n or &m!");
-        }
-        
         final TFM_PlayerData playerdata = TFM_PlayerData.getPlayerData(player);
         playerdata.setLastCommand(command);
 
@@ -689,6 +675,15 @@ public class TFM_PlayerListener implements Listener
 
             event.setCancelled(true);
             return;
+        }
+        
+        // Makes it so that imposters can't jump when frozen
+        if (!TFM_AdminList.isSuperAdmin(player) && playerdata.isFrozen())
+        {
+            if (command.contains("jump"))
+            {
+                event.setCancelled(true);
+            }
         }
 
         if (playerdata.allCommandsBlocked())
@@ -705,7 +700,7 @@ public class TFM_PlayerListener implements Listener
             {
                 for (String commandName : BLOCKED_MUTED_CMDS)
                 {
-                    if (Pattern.compile("^/" + commandName.toLowerCase() + " ").matcher(command).find())
+                    if (Pattern.compile("^/" + commandName.toLowerCase() + " ").matcher(command.toLowerCase()).find())
                     {
                         player.sendMessage(ChatColor.RED + "That command is blocked while you are muted.");
                         event.setCancelled(true);
@@ -724,49 +719,24 @@ public class TFM_PlayerListener implements Listener
             TFM_Log.info(String.format("[PREPROCESS_COMMAND] %s(%s): %s", player.getName(), ChatColor.stripColor(player.getDisplayName()), command), true);
         }
 
-        command = command.toLowerCase().trim();
-
         // Blocked commands
-        if (TFM_CommandBlocker.isCommandBlocked(command, event.getPlayer()))
+        if (TFM_CommandBlocker.isCommandBlocked(command, player, true))
         {
             // CommandBlocker handles messages and broadcasts
             event.setCancelled(true);
         }
-        // Removes crash items, as made possible on FreedomOP.
-         if (command.contains("175:") || command.contains("double_plant:"))
-        {
-            event.setCancelled(true);
-            TFM_Util.autoEject(player, ChatColor.DARK_RED + "Do not attempt to use any command involving the crash item!");
-        }
 
-        ChatColor colour = ChatColor.GRAY;
-        // Changes worldedit commandspy to red
-        if (command.contains("//"))
-        {
-            colour = ChatColor.RED;
-        }
         if (!TFM_AdminList.isSuperAdmin(player))
         {
             for (Player pl : Bukkit.getOnlinePlayers())
             {
                 if (TFM_AdminList.isSuperAdmin(pl) && TFM_PlayerData.getPlayerData(pl).cmdspyEnabled())
                 {
-                    TFM_Util.playerMsg(pl, colour + player.getName() + ": " + command);
-                }
-            }
-        }
-        else
-        {
-            for (Player pl : Bukkit.getOnlinePlayers())
-            {
-                if (TFM_Util.isHighRank(pl) && TFM_PlayerData.getPlayerData(pl).cmdspyEnabled() && player != pl)
-                {
-                    TFM_Util.playerMsg(pl, colour + player.getName() + ": " + command);
+                    TFM_Util.playerMsg(pl, player.getName() + ": " + command);
                 }
             }
         }
     }
-
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDropItem(PlayerDropItemEvent event)
@@ -879,110 +849,43 @@ public class TFM_PlayerListener implements Listener
             player.getInventory().clear();
             player.setOp(false);
             player.setGameMode(GameMode.SURVIVAL);
-            // Adds the [IMP] tag to imposters as done by FreedomOP
-            if((ChatColor.GRAY + "[IMP]" + player.getName()).length() <= 16)
-            {
-                player.setPlayerListName(ChatColor.GRAY + "[IMP]" + player.getName());
-            }
-            else
-            {
-                player.setPlayerListName(ChatColor.GRAY + "[IMP]");
-            }
             TFM_PlayerData.getPlayerData(player).setFrozen(true);
         }
         else if (TFM_AdminList.isSuperAdmin(player) || TFM_Util.DEVELOPERS.contains(player.getName()))
         {
             TFM_Util.bcastMsg(ChatColor.AQUA + player.getName() + " is " + TFM_PlayerRank.getLoginMessage(player));
         }
-    
+
+        //TODO: Cleanup
         String name = player.getName();
-        String name2;
-        
-        if(name.equals("SupItsDillon"))
+        if (TFM_Util.DEVELOPERS.contains(player.getName()))
         {
-            player.kickPlayer("Fuck off");
-        }
-        if (TFM_AdminList.isSuperAdmin(player))
-        {
-            TFM_PlayerData.getPlayerData(player).setCommandSpy(true);
-        }
-        if (player.getName().equals("Camzie99") || player.getName().equals("DarkLynx108"))
-        {
-            player.setPlayerListName(ChatColor.BLUE + player.getName());
-            TFM_PlayerData.getPlayerData(player).setTag("&8[&9Owner&8]");
-        }
-        else if (player.getName().equals("CrafterSmith12"))
-        {
-            player.setPlayerListName(ChatColor.BLUE + player.getName());
-            TFM_PlayerData.getPlayerData(player).setTag("&8[&9Founder&8]");
-
-        }
-        else if (player.getName().equalsIgnoreCase("aggelosQQ"))
-        {
-            player.setPlayerListName(ChatColor.YELLOW + "aggelosQQ");
-            TFM_EssentialsBridge.setNickname(player.getName(), ChatColor.DARK_RED + "ag" + ChatColor.RED + "ge" + ChatColor.DARK_BLUE + "lo" + ChatColor.BLUE + "sQ" + ChatColor.GREEN + "Q");
-            event.setJoinMessage(ChatColor.YELLOW + "aggelosQQ joined the game.");
-            TFM_PlayerData.getPlayerData(player).setTag("&8[&eSpecial Executive&8]");
-            player.chat("Hey everyone, I'm a Special Executive and the Associated Server Liason.");
-        }
-        else if (player.getName().equalsIgnoreCase("slimeh4778"))
-        {
-            player.setPlayerListName(ChatColor.LIGHT_PURPLE + "slimeh4778");
-            player.setDisplayName("Pie");
-            event.setJoinMessage(ChatColor.YELLOW + "Pie has joined the game.");
-            TFM_PlayerData.getPlayerData(player).setTag("&8[&dSenior Admin &8/ &5Dev&8]");
-
-        }
-        else if (player.getName().equalsIgnoreCase("xDestroyer217"))
-        {
-            player.setPlayerListName(ChatColor.DARK_PURPLE + "Robin");
-            player.setDisplayName("Robin");
-            event.setJoinMessage(ChatColor.YELLOW + "Guess who came.");
-            event.setJoinMessage(ChatColor.YELLOW + "xDestroyer217 joined the game.");
-            event.setJoinMessage(ChatColor.AQUA + "Robin is a" + ChatColor.DARK_GREEN + "Zombie Killer ");
-        }
-
-        else if (TFM_Util.SYS_ADMINS.contains(player.getName()))
-        {
-            player.setPlayerListName((ChatColor.YELLOW + player.getName()).substring(0, Math.min(player.getName().length(), 16)));
-            TFM_PlayerData.getPlayerData(player).setTag("&8[&dSys-Admin&8]");
-        }
-        else if (TFM_Util.SPECIAL_EXECS.contains(player.getName()))
-        {
-            name2 = (ChatColor.YELLOW + player.getName()).substring(0, Math.min(player.getName().length(), 16));
-            TFM_PlayerData.getPlayerData(player).setTag("&8[&cSpecial-Exec&8]");
-        }
-        else if (TFM_Util.FOP_DEVELOPERS.contains(player.getName()))
-        {
-            player.setPlayerListName(ChatColor.DARK_PURPLE + player.getName());
+            name = ChatColor.DARK_PURPLE + name;
             TFM_PlayerData.getPlayerData(player).setTag("&8[&5Developer&8]");
-        }
-        else if (TFM_Util.WEB_DEVELOPERS.contains(player.getName()))
-        {
-            player.setPlayerListName(ChatColor.GREEN + player.getName());
-            TFM_PlayerData.getPlayerData(player).setTag("&8[&aWeb Dev&8]");
-        }
-        else if (TFM_Util.DEVELOPERS.contains(player.getName()))
-        {
-            player.setPlayerListName(ChatColor.DARK_PURPLE + player.getName());
-            TFM_PlayerData.getPlayerData(player).setTag("&8[&5TFM-Developer&8]");
-        }
-        else if (TFM_AdminList.isSeniorAdmin(player))
-        {
-            player.setPlayerListName(ChatColor.LIGHT_PURPLE + player.getName());
-            TFM_PlayerData.getPlayerData(player).setTag("&8[&dSenior-Admin&8]");
-        }
-        else if (TFM_AdminList.isTelnetAdmin(player, true))
-        {
-            player.setPlayerListName(ChatColor.DARK_GREEN + player.getName());
-            TFM_PlayerData.getPlayerData(player).setTag("&8[&2Telnet-Admin&8]");
         }
         else if (TFM_AdminList.isSuperAdmin(player))
         {
-            player.setPlayerListName(ChatColor.AQUA + player.getName());
-            TFM_PlayerData.getPlayerData(player).setTag("&8[&bSuper-Admin&8]");
+            if (TFM_ConfigEntry.SERVER_OWNERS.getList().contains(name))
+            {
+                name = ChatColor.BLUE + name;
+                TFM_PlayerData.getPlayerData(player).setTag("&8[&9Owner&8]");
+            }
+            else if (TFM_AdminList.isSeniorAdmin(player))
+            {
+                name = ChatColor.LIGHT_PURPLE + name;
+                TFM_PlayerData.getPlayerData(player).setTag("&8[&dSenior Admin&8]");
+            }
+            else if (TFM_AdminList.isTelnetAdmin(player, true))
+            {
+                name = ChatColor.DARK_GREEN + name;
+                TFM_PlayerData.getPlayerData(player).setTag("&8[&2Telnet Admin&8]");
+            }
+            else
+            {
+                name = ChatColor.AQUA + name;
+                TFM_PlayerData.getPlayerData(player).setTag("&8[&BSuper Admin&8]");
+            }
         }
-
 
         try
         {
@@ -1001,129 +904,55 @@ public class TFM_PlayerListener implements Listener
                 {
                     player.sendMessage(ChatColor.RED + "Server is currently closed to non-superadmins.");
                 }
-                
-                if (TFM_ConfigEntry.TRAINING_SESSION.getBoolean())
-                {
-                    player.sendMessage(ChatColor.RED + "Server is currently in a training session.");
-                }
-                
-                if (TFM_ConfigEntry.ENABLE_CHAOS.getBoolean())
-                {
-                    player.sendMessage(ChatColor.RED + "Server is currently in chaos mode. Expect some crazy s**t!");
-                }
-                
+
                 if (TotalFreedomMod.lockdownEnabled)
                 {
                     TFM_Util.playerMsg(player, "Warning: Server is currenty in lockdown-mode, new players will not be able to join!", ChatColor.RED);
                 }
             }
-        }.runTaskLater(TotalFreedomMod.plugin, 20L * 3L);
+        }.runTaskLater(TotalFreedomMod.plugin, 20L * 1L);
     }
     
-        @EventHandler
-    public void doubleJump(PlayerToggleFlightEvent event)
-    {
-        final Player player = event.getPlayer();
-        if (event.isFlying() && TFM_Util.isDoubleJumper(player))
-        {
-            player.setFlying(false);
-            Vector jump = player.getLocation().getDirection().multiply(2).setY(1.1);
-            player.setVelocity(player.getVelocity().add(jump));
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerHurt(EntityDamageEvent event)
-    {
-        if (event.getEntity() instanceof Player)
-        {
-            Player player = (Player) event.getEntity();
-            if (TFM_Util.inGod(player))
-            {
-                event.setCancelled(true);
-            }
-        }
-    }
-    
-    // Adds FOP's strict god pvp policy
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event)
     {
+        // Makes it so that players cannot kill imposters
         if (event.getEntity() instanceof Player)
         {
             if (event.getDamager() instanceof Player)
             {
                 Player player = (Player) event.getDamager();
-                if (player.getGameMode() == GameMode.CREATIVE)
+                Player sender = (Player) event.getEntity();
+                final TFM_PlayerData playerdata = TFM_PlayerData.getPlayerData(sender);
+                if (!TFM_AdminList.isSuperAdmin(sender) && playerdata.isFrozen())
                 {
-                    TFM_Util.playerMsg(player, "NO GM / GOD PVP!", ChatColor.DARK_RED);
-                    event.setCancelled(true);
-                }
-            }
-            if (event.getDamager() instanceof Arrow)
-            {
-                Arrow arrow = (Arrow) event.getDamager();
-                if (arrow.getShooter() instanceof Player)
-                {
-                    Player player = (Player) arrow.getShooter();
-                    if (player.getGameMode() == GameMode.CREATIVE || TFM_Util.inGod(player))
-                    {
-                        TFM_Util.playerMsg(player, "NO GM / GOD PVP!", ChatColor.DARK_RED);
-                        event.setCancelled(true);
-                    }
-                }
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerJump(PlayerMoveEvent event)
-    {
-        Location from = event.getFrom();
-        Location to = event.getTo();
-        if (to.getBlockY() > from.getBlockY())
-        {
-            Player player = event.getPlayer();
-            if (TFM_Util.isDoubleJumper(player))
-            {
-                player.setAllowFlight(true);
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerDrinkPotion(PlayerItemConsumeEvent event)
-    {
-        if (event.getItem().getType() == Material.POTION && !TFM_Util.isHighRank(event.getPlayer()))
-        {
-            playerMsg(event.getPlayer(), "Please use /potion to add potion effects, thank you!", ChatColor.GREEN);
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onSplashPotion(PotionSplashEvent event)
-    {
-        for(PotionEffect effect : event.getPotion().getEffects())
-        {
-            if (effect.getType() == INVISIBILITY)
-            {
-                Entity e = event.getEntity();
-                if (e instanceof Player)
-                {
-                    Player player = (Player) e;
-                    playerMsg(player, "You are not permitted to use invisibility potions!", ChatColor.RED);
+                    TFM_Util.playerMsg(player, "You may not kill an admin that is imposed.", ChatColor.DARK_RED);
                     event.setCancelled(true);
                 }
             }
         }
     }
-
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event)
     {
+        if (TFM_ConfigEntry.FORCE_IP_ENABLED.getBoolean())
+        {
+            final String hostname = event.getHostname().replace("FML", ""); // Forge fix - https://github.com/TotalFreedom/TotalFreedomMod/issues/493
+            final String connectAddress = TFM_ConfigEntry.SERVER_ADDRESS.getString();
+            final int connectPort = TotalFreedomMod.server.getPort();
+
+            if (!hostname.equalsIgnoreCase(connectAddress + ":" + connectPort) && !hostname.equalsIgnoreCase(connectAddress + ".:" + connectPort))
+            {
+                final int forceIpPort = TFM_ConfigEntry.FORCE_IP_PORT.getInteger();
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER,
+                        TFM_ConfigEntry.FORCE_IP_KICKMSG.getString()
+                        .replace("%address%", TFM_ConfigEntry.SERVER_ADDRESS.getString() + (forceIpPort == DEFAULT_PORT ? "" : ":" + forceIpPort)));
+                return;
+            }
+
+        }
+
         TFM_ServerInterface.handlePlayerLogin(event);
     }
 }

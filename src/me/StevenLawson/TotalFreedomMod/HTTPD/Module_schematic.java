@@ -14,7 +14,6 @@ import me.StevenLawson.TotalFreedomMod.HTTPD.NanoHTTPD.Response;
 import me.StevenLawson.TotalFreedomMod.TFM_Admin;
 import me.StevenLawson.TotalFreedomMod.TFM_AdminList;
 import me.StevenLawson.TotalFreedomMod.TFM_Log;
-import me.StevenLawson.TotalFreedomMod.TotalFreedomMod;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +54,7 @@ public class Module_schematic extends TFM_HTTPD_Module
 
     public String title()
     {
-        return TotalFreedomMod.MOD_NAME + " :: Schematic Manager";
+        return "TotalFreedomMod :: Schematic Manager";
     }
 
     public String body() throws ResponseOverrideException

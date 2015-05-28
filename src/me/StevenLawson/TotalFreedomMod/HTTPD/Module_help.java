@@ -12,7 +12,6 @@ import me.StevenLawson.TotalFreedomMod.Commands.TFM_CommandLoader;
 import me.StevenLawson.TotalFreedomMod.Commands.TFM_CommandLoader.TFM_DynamicCommand;
 import static me.StevenLawson.TotalFreedomMod.HTTPD.HTMLGenerationTools.heading;
 import static me.StevenLawson.TotalFreedomMod.HTTPD.HTMLGenerationTools.paragraph;
-import me.StevenLawson.TotalFreedomMod.TotalFreedomMod;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.command.Command;
@@ -96,7 +95,7 @@ public class Module_help extends TFM_HTTPD_Module
             AdminLevel lastTfmCommandLevel = null;
             for (Command command : commands)
             {
-                if (TotalFreedomMod.MOD_NAME.equals(pluginName))
+                if ("TotalFreedomMod".equals(pluginName))
                 {
                     AdminLevel tfmCommandLevel = ((TFM_DynamicCommand) command).getCommandInfo().getLevel();
                     if (lastTfmCommandLevel == null || lastTfmCommandLevel != tfmCommandLevel)
@@ -140,7 +139,7 @@ public class Module_help extends TFM_HTTPD_Module
     @Override
     public String getTitle()
     {
-        return TotalFreedomMod.MOD_NAME + " :: Command Help";
+        return "TotalFreedomMod :: Command Help";
     }
 
     @Override

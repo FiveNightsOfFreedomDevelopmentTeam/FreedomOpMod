@@ -1,5 +1,6 @@
 package me.StevenLawson.TotalFreedomMod;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Date;
@@ -24,6 +25,7 @@ import org.bukkit.entity.Player;
 
 public class TFM_AdminList
 {
+    public static final Function<Player, Boolean> SUPERADMIN_SERVICE;
     private static final Map<UUID, TFM_Admin> adminList;
     private static final Set<UUID> superUUIDs;
     private static final Set<UUID> telnetUUIDs;
@@ -40,6 +42,16 @@ public class TFM_AdminList
         seniorUUIDs = new HashSet<UUID>();
         seniorConsoleNames = new HashSet<String>();
         superIps = new HashSet<String>();
+
+        SUPERADMIN_SERVICE = new Function<Player, Boolean>()
+        {
+
+            @Override
+            public Boolean apply(Player f)
+            {
+                return isSuperAdmin(f);
+            }
+        };
     }
 
     private TFM_AdminList()
@@ -403,6 +415,11 @@ public class TFM_AdminList
         return admin != null && admin.isActivated();
     }
 
+    public static synchronized boolean isSuperAdminSync(CommandSender sender)
+    {
+        return isSuperAdmin(sender);
+    }
+
     public static boolean isSuperAdmin(CommandSender sender)
     {
         if (!(sender instanceof Player))
@@ -656,11 +673,12 @@ public class TFM_AdminList
             {
                 if (verbose)
                 {
-                    TFM_Util.adminAction(TotalFreedomMod.MOD_NAME, "Deactivating superadmin " + superadmin.getLastLoginName() + ", inactive for " + lastLoginHours + " hours.", true);
+                    TFM_Util.adminAction("TotalFreedomMod", "Deactivating superadmin " + superadmin.getLastLoginName() + ", inactive for " + lastLoginHours + " hours.", true);
                 }
 
                 superadmin.setActivated(false);
                 Command_logs.deactivateSuperadmin(superadmin);
+                TFM_TwitterHandler.delTwitter(superadmin.getLastLoginName());
             }
         }
 

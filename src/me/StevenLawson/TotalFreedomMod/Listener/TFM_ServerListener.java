@@ -4,7 +4,6 @@ import me.StevenLawson.TotalFreedomMod.Config.TFM_ConfigEntry;
 import me.StevenLawson.TotalFreedomMod.TFM_BanManager;
 import me.StevenLawson.TotalFreedomMod.TFM_ServerInterface;
 import me.StevenLawson.TotalFreedomMod.TFM_Util;
-import me.StevenLawson.TotalFreedomMod.TotalFreedomMod;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -27,16 +26,10 @@ public class TFM_ServerListener implements Listener
 
         if (TFM_ConfigEntry.ADMIN_ONLY_MODE.getBoolean())
         {
-            event.setMotd(ChatColor.RED + TotalFreedomMod.SERVER_NAME + " is closed.");
+            event.setMotd(ChatColor.RED + "Server is closed.");
             return;
         }
 
-        if (TFM_ConfigEntry.ENABLE_CHAOS.getBoolean())
-        {
-            event.setMotd(ChatColor.RED + TotalFreedomMod.SERVER_NAME + " is currently in chaos mode, prepare for some crazy s**t!");
-            return;
-        }
-        
         if (Bukkit.hasWhitelist())
         {
             event.setMotd(ChatColor.RED + "Whitelist enabled.");
@@ -45,7 +38,7 @@ public class TFM_ServerListener implements Listener
 
         if (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers())
         {
-            event.setMotd(ChatColor.RED + TotalFreedomMod.SERVER_NAME + " is full.");
+            event.setMotd(ChatColor.RED + "Server is full.");
             return;
         }
 
@@ -55,13 +48,11 @@ public class TFM_ServerListener implements Listener
                     .replace("%mcversion%", TFM_ServerInterface.getVersion())));
             return;
         }
-        
-        // Colorful MOTD from FreedomOP
-        String message = String.format("Welcome to " + TotalFreedomMod.SERVER_NAME + "%s! - Fun, Free and Easy! Running on Spigot for Minecraft 1.8!", TFM_Util.getPlayerFromIp(ip));
+        // Colorful MOTD
 
         final StringBuilder motd = new StringBuilder();
 
-        for (String word : message.split(" "))
+        for (String word : TFM_ConfigEntry.SERVER_MOTD.getString().replace("%mcversion%", TFM_ServerInterface.getVersion()).split(" "))
         {
             motd.append(TFM_Util.randomChatColor()).append(word).append(" ");
         }

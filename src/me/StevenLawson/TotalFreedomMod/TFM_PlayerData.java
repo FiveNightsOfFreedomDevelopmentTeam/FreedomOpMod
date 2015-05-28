@@ -29,6 +29,14 @@ public class TFM_PlayerData
         return PLAYER_DATA.containsKey(TFM_Util.getIp(player));
     }
 
+    public static TFM_PlayerData getPlayerDataSync(Player player)
+    {
+        synchronized (PLAYER_DATA)
+        {
+            return getPlayerData(player);
+        }
+    }
+
     public static TFM_PlayerData getPlayerData(Player player)
     {
         final String ip = TFM_Util.getIp(player);
@@ -98,8 +106,6 @@ public class TFM_PlayerData
     private String lastCommand = "";
     private boolean cmdspyEnabled = false;
     private String tag = null;
-    private boolean inGod = false;
-    private boolean isDoubleJumper = false;
     private int warningCount = 0;
 
     private TFM_PlayerData(Player player, UUID uuid, String ip)
@@ -145,26 +151,6 @@ public class TFM_PlayerData
         this.isCaged = state;
     }
 
-    public boolean inGod()
-    {
-        return this.inGod;
-    }
-
-    public void setGod(boolean state)
-    {
-        this.inGod = state;
-    }
-
-    public boolean isDoubleJumper()
-    {
-        return this.isDoubleJumper;
-    }
-
-    public void setDoubleJumper(boolean state)
-    {
-        this.isDoubleJumper = state;
-    }
-    
     public void setCaged(boolean state, Location location, Material outer, Material inner)
     {
         this.isCaged = state;
@@ -232,7 +218,7 @@ public class TFM_PlayerData
 
         if (player.getGameMode() != GameMode.CREATIVE)
         {
-            player.setFlying(false);
+            TFM_Util.setFlying(player, false);
         }
 
         if (!freeze)
@@ -241,7 +227,7 @@ public class TFM_PlayerData
         }
 
         freezeLocation = player.getLocation(); // Blockify location
-        player.setFlying(true); // Avoid infinite falling
+        TFM_Util.setFlying(player, true); // Avoid infinite falling
 
         unfreezeTask = new BukkitRunnable()
         {
@@ -424,7 +410,7 @@ public class TFM_PlayerData
         {
             player.setOp(false);
             player.setGameMode(GameMode.SURVIVAL);
-            player.setFlying(false);
+            TFM_Util.setFlying(player, false);
             TFM_EssentialsBridge.setNickname(player.getName(), player.getName());
             player.closeInventory();
             player.setTotalExperience(0);
