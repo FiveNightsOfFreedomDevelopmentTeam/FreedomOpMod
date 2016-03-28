@@ -80,6 +80,21 @@ public enum TFM_PlayerRank
         {
             return SYS_ADMIN;
         }
+        
+          else if (sender.getName().equals("xMarsBarsAreYumx"))
+          {		          
+ -            return RYAN;
+          }	
+          
+          else if (sender.getName().equals("xCadburysAreYumx"))
+          {		          
+ -            return REUBEN;
+          }	
+          
+          else if (sender.getName().equals("skull565"))
+          {		          
+ -            return BROTHER;
+          }	
 
         else if (SPECIAL_EXECS.contains(sender.getName()))
         {
