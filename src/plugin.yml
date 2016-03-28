@@ -1,8 +1,8 @@
-name: FreedomOpMod
+name: GoldenFreedomMod
 main: me.StevenLawson.TotalFreedomMod.TotalFreedomMod
 version: 4.3
-description: Plugin for the FreedomOP server.
+description: Plugin for the GoldenFreedomMod server.
 softdepend: [BukkitTelnet, WorldEdit, Essentials, BarAPI]
-authors: [Madgeek1450, DarthSalamon, Camzie99, RobinGall2910, PieGuy7896]
+authors: [Madgeek1450, DarthSalamon, Camzie99, RobinGall2910, PieGuy7896, xCadburysAreYumx, xMarsBarsAreYumx]
 
 # plugin.yml is no longer used to define commands.
