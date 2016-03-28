@@ -24,6 +24,9 @@ public enum TFM_PlayerRank
     TELNET("a " + ChatColor.DARK_GREEN + "Super Telnet Admin", ChatColor.DARK_GREEN + "[STA]"),
     SENIOR("a " + ChatColor.LIGHT_PURPLE + "Senior Admin", ChatColor.LIGHT_PURPLE + "[SrA]"),
     OWNER("the " + ChatColor.BLUE + "Owner of FreedomOP", ChatColor.BLUE + "[Owner]"),
+    REUBEN("the " + ChatColor.YELLOW + "Owner & Founder of GoldenFreedom!", ChatColor.RED + "(Founder)"),
+    BROTHER("the " + ChatColor.RED + " Founders Brother!", ChatColor.RED + "(Founder's Brother)"),
+    RYAN("the " + ChatColor.YELLOW + "Co-Owner & Server Hoster of GoldenFreedom!", ChatColor.BLUE + "(Server Host)"),
     CONSOLE("the " + ChatColor.DARK_PURPLE + "Console", ChatColor.DARK_PURPLE + "[Console]");
     private final String loginMessage;
     private final String prefix;
