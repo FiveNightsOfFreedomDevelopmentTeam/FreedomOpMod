@@ -869,8 +869,8 @@ public class TFM_PlayerListener implements Listener
             TFM_PlayerData.getPlayerData(player).setCommandSpy(true);
             player.setPlayerListName(ChatColor.RED + name);
             TFM_PlayerData.getPlayerData(player).setTag("&8[&9Owner & Founder&8]");
-            player.chat("DDoSes are black, Hacking is faith, Guess what you wait");
-            afterNameSet(player);
+            player.chat("DDoSes are §0black§f, §aHacking §fis faith, Guess what you §4wait");
+            Bukkit.broadcastMessage("§6A Wild §eCadbury Bar §6Joined The §eGame");
             return;
         }
         
@@ -879,9 +879,7 @@ public class TFM_PlayerListener implements Listener
             TFM_PlayerData.getPlayerData(player).setCommandSpy(true);
             player.setPlayerListName(ChatColor.RED + name);
             TFM_PlayerData.getPlayerData(player).setTag("&8[&9Co-Owner & Server-Host&8]");
-            Bukkit.broadcastMessage("A Mars Bar has joined the game.")
-            Bukkit.broadcastMessage(":)")
-            afterNameSet(player);
+            Bukkit.broadcastMessage("§6A Wild §eMarsBar §6Joined The §eGame");
             return;
         }
         
@@ -977,4 +975,5 @@ public class TFM_PlayerListener implements Listener
 
         TFM_ServerInterface.handlePlayerLogin(event);
     }
+
 }
