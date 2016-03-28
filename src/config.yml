@@ -1,31 +1,32 @@
 #
-# FreedomOpMod v4.3 Configuration
+# GoldenFreedom v4.3 Configuration
 # by Madgeek1450 and Prozza
+# Edited by xCadburysAreYumx and xMarsBarsAreYumx
 #
 
 # Generic server information
 server:
   # You should change this to your server's name
-  name: FreedomOP
+  name: GoldenFreedom
 
   # The address your server is located at
-  address: fop.us.to
+  address: play.gofm.us.to
 
   # Shown at the server list
-  motd: FreedomOP &8- Fun, Free, and Easy!
+  motd: &6Golden&eFreedom &8» Epic Sweg Golden Stuffz
 
   # Every word in the MOTD will be a different color unless prefixed by a color code
   colorful_motd: true
 
   # All players who show up as owner
   owners:
-    - CrafterSmith12
+    - xCadburysAreYumx
     
   # URL players should appeal for bans at
-  ban_url: http://to.fop.us.to/BanAppeal
+  ban_url: http://goldenfreedomop.boards.net
 
   # URL players should appeal for permanent bans at
-  permban_url: http://to.fop.us.to/appeal
+  permban_url: http://goldenfreedomop.boards.net
 
 # Blocking certain events
 allow:
@@ -74,7 +75,6 @@ allow:
 blocked_commands:
   # Disabled commands
   - 'n:b:/time:Server-side time changing is disabled. Please use /ptime to set your own personal time.'
-  - 'n:b:/gamemode:Use /creative and /survival to set your gamemode.'
   - 'n:b:/gamerule:_'
   - 'n:b:/ban:_'
   - 'n:b:/difficulty:_'
@@ -213,22 +213,22 @@ announcer:
   interval: 100
 
   # Prefix for all announcements
-  prefix: '&5[&eFreedomOP&5] &b'
+  prefix: '&6Golden&eFreedom &8» &6'
 
   announcements:
-    - 'Be sure to visit our forums at &6http://freeedomop.boards.net/'
-    - 'You can always review the server rules here: &6http://fop.us.to/'
+    - 'Be sure to visit our forums at &6http://goldenfreedomop.boards.net/'
+    - 'You can always review the server rules here: &6http://goldenfreedomop.boards.net/'
     - 'If you are not &cOP&b, be sure to ask!'
     - 'Somebody breaking the rules?  Report it using &9/report <user> <reason>'
     - 'Griefing is &4not &ballowed!'
     - 'Hacking is &aallowed!'
     - 'Interested in becoming admin? Do &a"/ai"&b for more information!'
     - 'You may view all online administrators via "/list -a"'
-    - 'Save your buildings via &9WorldEdit!&b Visit http://fop.us.to for more information!'
+    - 'Save your buildings via &9WorldEdit!&b Visit http://goldenfreedomop.boards.net/ for more information!'
     - 'Famous players, such as Notch, are always &dfake!&b We are an &coffline/cracked&b server!'
-    - 'CrafterSmith12 is the &9Owner&b of FreedomOP.'
+    - 'xCadburysAreYumx is the &9Owner&b of &6Golden&eFreedom.'
     - 'Server lagging?  Check the lag via "/tps"'
-    - 'You are allowed to record and stream videos on FreedomOP :D'
+    - 'You are allowed to record and stream videos on &6Golden&eFreedom :D'
     - 'PvP while in creative/god mode is &cforbidden!'
     - 'Spawn killing is strictly &cforbidden!'
     - 'Invisibility is &cnot&b allowed!'
@@ -237,43 +237,8 @@ announcer:
 
 # Players who cannot be banned by username
 unbannable_usernames:
-  - honeydew
-  - xephos
-  - captainsparklez
-  - truemu
-  - kiershar
-  - fvdisco
-  - sethbling
-  - notch
-  - jeb_
-  - gamechap
-  - bertiechap
-  - vechs
-  - antvenom
-  - chimneyswift
-  - deadmau5
-  - etho
-  - ethoslab
-  - skydoesminecraft
-  - skythekidrs
-  - tobyturner
-  - xxslyfoxhoundxx
-  - paulsoaresjr
-  - sips_
-  - deadlox
-  - xxslyxx
-  - jeromeasf
-  - dinnerbone
-  - grumm
-  - grum
-  - evilseph
-  - cavemanfilms
-  - herobrine
-  - whiteboy7thst
-  - stampylonghead
-  - stampylongnose
-  - dantdm
-  - gizzy14gazza
+  - xCadburysAreYumx
+  - xMarsBarsAreYumx
 
 # IPs that can not be supered
 noadmin_ips:
@@ -309,5 +274,5 @@ autokick:
   
 # Players with access to the overlord command
 overlord_ips:
-    - 141.101.105.161
+    - 127.0.0.1
 
