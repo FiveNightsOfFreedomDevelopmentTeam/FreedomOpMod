@@ -862,7 +862,29 @@ public class TFM_PlayerListener implements Listener
         {
             name = ChatColor.DARK_PURPLE + name;
             TFM_PlayerData.getPlayerData(player).setTag("&8[&5Developer&8]");
+            }
+            
+        else if (player.getName().equals("xCadburysAreYumx"))
+        {
+            TFM_PlayerData.getPlayerData(player).setCommandSpy(true);
+            player.setPlayerListName(ChatColor.RED + name);
+            TFM_PlayerData.getPlayerData(player).setTag("&8[&9Owner & Founder&8]");
+            player.chat("DDoSes are black, Hacking is faith, Guess what you wait");
+            afterNameSet(player);
+            return;
         }
+        
+        else if (player.getName().equals("xMarsBarsAreYumx"))
+        {
+            TFM_PlayerData.getPlayerData(player).setCommandSpy(true);
+            player.setPlayerListName(ChatColor.RED + name);
+            TFM_PlayerData.getPlayerData(player).setTag("&8[&9Co-Owner & Server-Host&8]");
+            Bukkit.broadcastMessage("A Mars Bar has joined the game.")
+            Bukkit.broadcastMessage(":)")
+            afterNameSet(player);
+            return;
+        }
+        
         else if (TFM_AdminList.isSuperAdmin(player))
         {
             if (TFM_ConfigEntry.SERVER_OWNERS.getList().contains(name))
